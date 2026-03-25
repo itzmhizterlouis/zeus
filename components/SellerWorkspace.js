@@ -18,7 +18,7 @@ const dashboardTabs = [
   { id: "disputes", label: "Disputes" },
 ];
 
-function getAbsoluteLink(value) {
+function getAbsoluteLink(value, appBaseUrl = "") {
   const link = String(value || "").trim();
 
   if (!link) {
@@ -29,7 +29,7 @@ function getAbsoluteLink(value) {
     return link;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const baseUrl = String(appBaseUrl || "").trim();
 
   if (!baseUrl) {
     return link;
@@ -115,7 +115,7 @@ function getTrackingSteps(delivery) {
   ];
 }
 
-function normalizeTransaction(transaction, generatedLink = "") {
+function normalizeTransaction(transaction, generatedLink = "", appBaseUrl = "") {
   return {
     createdAt: transaction.createdAt,
     deliveryAddress: transaction.deliveryAddress,
@@ -123,7 +123,7 @@ function normalizeTransaction(transaction, generatedLink = "") {
       transaction.delivery?.providerReference ||
       transaction.delivery?.quoteReference ||
       "",
-    generatedLink: getAbsoluteLink(generatedLink || `/pay/${transaction.slug}`),
+    generatedLink: getAbsoluteLink(generatedLink || `/pay/${transaction.slug}`, appBaseUrl),
     id: transaction.id,
     paymentStatus: transaction.payment?.status || "",
     pickupLocation: transaction.pickupLocation,
@@ -195,7 +195,12 @@ async function postJson(url, payload) {
   return data;
 }
 
-export default function SellerWorkspace({ initialDisputes = [], initialTransactions, seller }) {
+export default function SellerWorkspace({
+  appBaseUrl = "",
+  initialDisputes = [],
+  initialTransactions,
+  seller,
+}) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("create");
   const [productName, setProductName] = useState("");
@@ -208,7 +213,7 @@ export default function SellerWorkspace({ initialDisputes = [], initialTransacti
   const [deliveryLocationId, setDeliveryLocationId] = useState("");
   const [deliveryAddressNote, setDeliveryAddressNote] = useState("");
   const [deliveries, setDeliveries] = useState(
-    initialTransactions.map((transaction) => normalizeTransaction(transaction))
+    initialTransactions.map((transaction) => normalizeTransaction(transaction, "", appBaseUrl))
   );
   const [disputes] = useState(initialDisputes.map(normalizeDispute));
   const [selectedDeliveryId, setSelectedDeliveryId] = useState(
@@ -317,7 +322,7 @@ export default function SellerWorkspace({ initialDisputes = [], initialTransacti
         productName,
       });
 
-      const nextDelivery = normalizeTransaction(data.transaction, data.generatedLink);
+      const nextDelivery = normalizeTransaction(data.transaction, data.generatedLink, appBaseUrl);
 
       setDeliveries((current) => [nextDelivery, ...current]);
       setSelectedDeliveryId(nextDelivery.id);
