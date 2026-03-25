@@ -1,0 +1,19 @@
+<svg width="520" height="320" viewBox="0 0 520 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="520" height="320" fill="white" fill-opacity="0.01"/>
+  <g fill="none" stroke="#0A4C80" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M259 28L372 215H146L259 28Z" stroke-width="16"/>
+    <path d="M223 135L259 171L334 94" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text
+    x="260"
+    y="287"
+    text-anchor="middle"
+    fill="#0A4C80"
+    font-family="Avenir Next, SF Pro Display, Helvetica Neue, Arial, sans-serif"
+    font-size="62"
+    font-weight="700"
+    letter-spacing="1"
+  >
+    ZESCROW
+  </text>
+</svg>

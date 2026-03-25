@@ -1,0 +1,17 @@
+{
+  "name": "zescrow",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port ${PORT:-3001}",
+    "build": "next build",
+    "start": "next start --port ${PORT:-3001}"
+  },
+  "dependencies": {
+    "next": "15.2.4",
+    "nodemailer": "^8.0.3",
+    "pg": "^8.20.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  }
+}
