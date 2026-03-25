@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const defaultSignup = {
@@ -67,6 +68,7 @@ async function uploadAsset(file) {
 }
 
 export default function SellerAccess({ initialMode, initialSeller }) {
+  const router = useRouter();
   const [mode, setMode] = useState(initialSeller ? "resume" : initialMode);
   const [currentStep, setCurrentStep] = useState(initialSeller ? 2 : 0);
   const [signupForm, setSignupForm] = useState(defaultSignup);
@@ -181,7 +183,8 @@ export default function SellerAccess({ initialMode, initialSeller }) {
       const data = await postJson("/api/auth/seller/complete-profile", profileForm);
       setCurrentStep(3);
       setInfoMessage(data.message);
-      window.location.href = "/seller/dashboard";
+      router.push("/seller/dashboard");
+      router.refresh();
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -208,12 +211,14 @@ export default function SellerAccess({ initialMode, initialSeller }) {
 
       if (data.nextStep === "profile") {
         setInfoMessage(data.message);
-        window.location.href = "/seller";
+        router.push("/seller");
+        router.refresh();
         return;
       }
 
       setInfoMessage(data.message);
-      window.location.href = "/seller/dashboard";
+      router.push("/seller/dashboard");
+      router.refresh();
     } catch (error) {
       setErrorMessage(error.message);
     } finally {

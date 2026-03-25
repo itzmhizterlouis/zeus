@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatNaira } from "../lib/demo-data";
 import {
@@ -195,6 +196,7 @@ async function postJson(url, payload) {
 }
 
 export default function SellerWorkspace({ initialDisputes = [], initialTransactions, seller }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("create");
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState("");
@@ -247,7 +249,8 @@ export default function SellerWorkspace({ initialDisputes = [], initialTransacti
         method: "POST",
       });
     } finally {
-      window.location.href = "/seller";
+      router.push("/seller");
+      router.refresh();
     }
   }
 
