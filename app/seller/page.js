@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import SellerAccess from "../../components/SellerAccess";
 import SiteNav from "../../components/SiteNav";
 import { getCurrentSeller } from "../../lib/server/seller-auth";
@@ -13,10 +12,6 @@ export default async function SellerPage({ searchParams }) {
   const seller = await getCurrentSeller();
   const params = await searchParams;
   const mode = params?.mode === "login" ? "login" : "signup";
-
-  if (seller?.onboardingCompleted) {
-    redirect("/seller/dashboard");
-  }
 
   return (
     <main className="site-shell">
@@ -41,7 +36,11 @@ export default async function SellerPage({ searchParams }) {
           payout setup, and then access to the protected dashboard.
         </p>
       </section>
-      <SellerAccess initialMode={mode} initialSeller={seller} />
+      <SellerAccess
+        key={`${mode}-${seller?.id || "guest"}-${seller?.onboardingCompleted ? "complete" : "pending"}`}
+        initialMode={mode}
+        initialSeller={seller}
+      />
     </main>
   );
 }

@@ -69,8 +69,8 @@ async function uploadAsset(file) {
 
 export default function SellerAccess({ initialMode, initialSeller }) {
   const router = useRouter();
-  const [mode, setMode] = useState(initialSeller ? "resume" : initialMode);
-  const [currentStep, setCurrentStep] = useState(initialSeller ? 2 : 0);
+  const [mode, setMode] = useState(initialMode);
+  const [currentStep, setCurrentStep] = useState(0);
   const [signupForm, setSignupForm] = useState(defaultSignup);
   const [loginForm, setLoginForm] = useState(defaultLogin);
   const [otpForm, setOtpForm] = useState({ emailCode: "", phoneCode: "" });
@@ -85,6 +85,9 @@ export default function SellerAccess({ initialMode, initialSeller }) {
   );
   const [busy, setBusy] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [showSessionChoice, setShowSessionChoice] = useState(Boolean(initialSeller));
+  const hasActiveSession = Boolean(initialSeller);
+  const hasCompletedSession = Boolean(initialSeller?.onboardingCompleted);
 
   function updateSignupField(field, value) {
     setSignupForm((current) => ({ ...current, [field]: value }));
@@ -226,6 +229,40 @@ export default function SellerAccess({ initialMode, initialSeller }) {
     }
   }
 
+  async function handleSwitchAccount() {
+    setBusy(true);
+    resetNotices();
+
+    try {
+      await fetch("/api/auth/seller/logout", {
+        method: "POST",
+      });
+      router.push(initialMode === "login" ? "/seller?mode=login" : "/seller");
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(error.message || "Unable to sign out right now.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function handleContinueCurrentSession() {
+    if (!initialSeller) {
+      return;
+    }
+
+    if (initialSeller.onboardingCompleted) {
+      router.push("/seller/dashboard");
+      router.refresh();
+      return;
+    }
+
+    setShowSessionChoice(false);
+    setMode("resume");
+    setCurrentStep(2);
+    setInfoMessage("Continue completing your seller verification.");
+  }
+
   const isLogin = mode === "login";
   const isResume = Boolean(initialSeller) || currentStep >= 2;
 
@@ -236,10 +273,16 @@ export default function SellerAccess({ initialMode, initialSeller }) {
           <div className="panel-header">
             <div>
               <span className="eyebrow accent-green">
-                {initialSeller ? "Resume onboarding" : isLogin ? "Vendor login" : "Vendor signup"}
+                {showSessionChoice
+                  ? "Active session"
+                  : isLogin
+                    ? "Vendor login"
+                    : "Vendor signup"}
               </span>
               <h2>
-                {initialSeller
+                {showSessionChoice
+                  ? "You already have an active vendor session"
+                  : initialSeller
                   ? "Finish seller verification"
                   : isLogin
                     ? "Log in to your vendor account"
@@ -277,7 +320,38 @@ export default function SellerAccess({ initialMode, initialSeller }) {
             <div className="message-banner message-banner-info">{infoMessage}</div>
           ) : null}
 
-          {currentStep === 0 && !isLogin && (
+          {showSessionChoice ? (
+            <div className="content-stack">
+              <div className="highlight-box highlight-box-light">
+                <span className="highlight-label">Already signed in</span>
+                <strong>{initialSeller.displayName}</strong>
+                <p className="helper-text">
+                  This browser already has an active vendor session. Continue with
+                  this account or sign out first before creating or using another one.
+                </p>
+              </div>
+
+              <div className="button-row">
+                <button
+                  className="button button-dark"
+                  onClick={handleContinueCurrentSession}
+                  type="button"
+                >
+                  {hasCompletedSession ? "Go to dashboard" : "Continue setup"}
+                </button>
+                <button
+                  className="button button-light"
+                  disabled={busy}
+                  onClick={handleSwitchAccount}
+                  type="button"
+                >
+                  {busy ? "Signing out..." : "Sign out and continue"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {!showSessionChoice && currentStep === 0 && !isLogin && (
             <form className="content-stack" onSubmit={handleSignup}>
               <div className="field-grid">
                 <label className="field">
@@ -343,7 +417,7 @@ export default function SellerAccess({ initialMode, initialSeller }) {
             </form>
           )}
 
-          {currentStep === 0 && isLogin && (
+          {!showSessionChoice && currentStep === 0 && isLogin && (
             <form className="content-stack" onSubmit={handleLogin}>
               <div className="field-grid">
                 <label className="field field-full">
@@ -373,7 +447,7 @@ export default function SellerAccess({ initialMode, initialSeller }) {
             </form>
           )}
 
-          {currentStep === 1 && (
+          {!showSessionChoice && currentStep === 1 && (
             <form className="content-stack" onSubmit={handleOtpVerification}>
               <div className="field-grid">
                 <label className="field">
@@ -428,7 +502,7 @@ export default function SellerAccess({ initialMode, initialSeller }) {
             </form>
           )}
 
-          {isResume && (
+          {!showSessionChoice && isResume && (
             <form className="content-stack" onSubmit={handleCompleteProfile}>
               <div className="field-grid">
                 <label className="field">

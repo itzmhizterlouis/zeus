@@ -101,7 +101,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section-card">
+      <section className="section-card split-section">
         <div className="section-heading">
           <span className="eyebrow accent-green">Core principles</span>
           <h2>Kept simple on purpose.</h2>

@@ -276,6 +276,13 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  transform-origin: center;
+}
+
+.stage-card:hover {
+  transform: scale(1.018);
+  box-shadow: 0 34px 84px rgba(13, 13, 13, 0.24);
 }
 
 .hero-card-title {
@@ -294,6 +301,12 @@ button {
 .hero-list-item {
   padding-top: 0.95rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 180ms ease, opacity 180ms ease;
+  transform-origin: left center;
+}
+
+.hero-list-item:hover {
+  transform: scale(1.015);
 }
 
 .hero-list-item p {
@@ -416,6 +429,17 @@ button {
 
 .journey-card {
   padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  transform-origin: center;
+}
+
+.journey-card:hover {
+  transform: scale(1.022);
+  border-color: var(--line-strong);
+  box-shadow: 0 24px 44px rgba(13, 13, 13, 0.12);
 }
 
 .dual-panel {
@@ -485,6 +509,13 @@ button {
   background: white;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.closing-banner:hover {
+  transform: scale(1.01);
+  border-color: var(--line-strong);
+  box-shadow: 0 28px 56px rgba(13, 13, 13, 0.12);
 }
 
 .page-intro {
